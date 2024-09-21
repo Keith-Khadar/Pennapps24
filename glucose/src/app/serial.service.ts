@@ -61,7 +61,6 @@ export class SerialService {
       // Try to read from the reader
       try {
         // Constantly get data from the reader
-        let lineBuffer = '';
         while (true) {
           const { value, done } = await this.reader.read();
 
@@ -69,12 +68,14 @@ export class SerialService {
           if (done) {
             break;
           }
-
           // Create a decoder since we are sending the data as ASCII strings
           let utf8decoder = new TextDecoder();
           let in_char = utf8decoder.decode(value);
           if (!isNaN(parseFloat(in_char))) {
             this.dataSubject.next(parseFloat(in_char));
+          }
+          if (in_char == '-') {
+            this.dataSubject.next(-1);
           }
         }
       } catch (error) {
