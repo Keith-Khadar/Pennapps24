@@ -1,36 +1,23 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SerialService } from './serial.service';
+import { HeaderComponent } from './header/header.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, HeaderComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  private serialService: SerialService;
+  serialService: SerialService;
+  isConnected: boolean = false;
 
-  constructor(serialService: SerialService) {
+  constructor(serialService: SerialService){
     this.serialService = serialService;
-    this.serialService.data$.subscribe((data: number) => {
-      this.ProcessData(data);
-    });
-  }
-
-  Connect() {
-    const serialOptions = {
-      baudRate: 9600,
-      dataBits: 8,
-      parity: 'none',
-      stopBits: 1,
-    };
-
-    this.serialService.open(serialOptions);
-  }
-
-  ProcessData(data: number) {
-    console.log(data);
+    this.serialService.isConnected$.subscribe((isConnected) => {
+      this.isConnected = isConnected
+    })
   }
 }
