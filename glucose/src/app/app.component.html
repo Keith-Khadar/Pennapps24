@@ -1,19 +1,29 @@
 <div class="content-wrapper">
-
-
-<app-header></app-header>
-@if (this.isConnected){
-    <div class="connected-content">
+    <app-header (dataProcessed)="onDataProcessed($event)"></app-header>
+    @if (isConnected) {
+      <div class="connected-content">
         <h2 class="connection-status">Hi We are connected</h2>
         <div class="data-box">
-            <h3>TempData</h3>
+          <h3>AngleData</h3>
+          @if (currentAngle !== null) {
+            <div class="current-angle">
+              <h4>Current Angle:</h4>
+              <p>{{ currentAngle }} degrees</p>
+            </div>
+          }
+          <div class="angle-history">
+            <h4>Angle History (last {{ angleData.length }} readings)</h4>
+            <ul>
+              @for (angle of angleData; track angle) {
+                <li>{{ angle }} degrees</li>
+              }
+            </ul>
+          </div>
         </div>
-    </div>
-    
-}
-@else {
-    <div class="product-info">
+      </div>
+    } @else {
+      <div class="product-info">
         <p class="typewriter"><br />Freddy's Pizzeria: Where every slice tells a story. Our artisanal pizzas are crafted with love, using only the freshest ingredients sourced from local farms. Experience the perfect blend of traditional techniques and innovative flavors that will transport your taste buds to pizza paradise.</p>
-    </div>
-}
-</div>
+      </div>
+    }
+  </div>

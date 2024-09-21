@@ -36,17 +36,65 @@
     backdrop-filter: blur(10px);
 }
 .data-box {
-    border: 2px solid #f838a5;
-    border-radius: 8px;
-    padding: 1.5rem;
-    background-color: #f8fafc;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 20px;
+    h3 {
+        margin-top: 0;
+    }
+    .current-angle {
+        font-size: 24px;
+        margin-bottom: 20px;
+
+        h4 {
+            margin-bottom: 5px;
+        }
+
+        p {
+            font-weight: bold;
+        }
+    }
+
+    .angle-history {
+        h4 {
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+
+            li {
+                margin-bottom: 5px;
+            }
+        }
+    }
 }
 
-.data-box h3 {
-    margin-top: 0;
-    color: #4a5568;
+
+.line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 2px;
 }
 
+.axis path,
+.axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+}
+
+.grid path {
+    stroke-width: 0;
+}
 
 .typewriter {
     overflow: hidden;

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 import { SerialService } from '../serial.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { SerialService } from '../serial.service';
 })
 export class HeaderComponent {
   private serialService: SerialService;
-
+  @Output() dataProcessed = new EventEmitter<number>();
   constructor(serialService: SerialService) {
     this.serialService = serialService;
     this.serialService.data$.subscribe((data: number) => {
