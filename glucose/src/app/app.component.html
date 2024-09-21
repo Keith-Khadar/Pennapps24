@@ -1,7 +1,19 @@
+<div class="content-wrapper">
+
+
 <app-header></app-header>
 @if (this.isConnected){
-    <p>Hi We are connected</p>
-}
-@else {
+    <div class="connected-content">
+        <h2 class="connection-status">Hi We are connected</h2>
+        <div class="data-box">
+            <h3>TempData</h3>
+        </div>
+    </div>
     
 }
+@else {
+    <div class="product-info">
+        <p class="typewriter"><br />Freddy's Pizzeria: Where every slice tells a story. Our artisanal pizzas are crafted with love, using only the freshest ingredients sourced from local farms. Experience the perfect blend of traditional techniques and innovative flavors that will transport your taste buds to pizza paradise.</p>
+    </div>
+}
+</div>
