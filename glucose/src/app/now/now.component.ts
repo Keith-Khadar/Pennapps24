@@ -35,6 +35,7 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
   private fatigueDecayRate: number = 0.01; // How quickly fatigue decays over time
   private fatigueEffortThreshold: number = 70; // Threshold above which fatigue increases significantly
   private fatigueIncreaseRate: number = 0.05; // Base rate for increasing fatigue
+  repCounted: any;
 
   constructor(private serialService: SerialService) {
     this.serial = serialService;
@@ -113,19 +114,17 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     // Flag to indicate if a rep has been counted in the current cycle
-    let repCounted = false;
-
     if (currentAngle >= this.repThresholdHigh) {
       // Rep is counted only if it hasn't been counted already in this cycle
-      if (!repCounted) {
+      if (!this.repCounted) {
         this.reps++;
         this.lastRepTime = currentTime;
         this.lastAngle = null;
-        repCounted = true; // Set the flag to true after counting a rep
+        this.repCounted = true; // Set the flag to true after counting a rep
       }
     } else if (currentAngle < this.repThresholdLow) {
       // Reset rep counting when angle goes below low threshold
-      repCounted = false;
+      this.repCounted = false;
     }
 
     // Check if enough time has passed without a rep to count as a set
