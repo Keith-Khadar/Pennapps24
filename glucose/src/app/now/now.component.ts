@@ -23,12 +23,24 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
   config = { responsive: true, displayModeBar: false };
 
   private serial: SerialService;
+
+  private maxRangeTimer: number = 0; // Keeps track of how long since max value was reached
+  private rangeDecayRate: number = 0.1; // Decay rate for the range over time
+  private lastAngle: number | null = null;
+  private lastRepTime: number | null = null;
+  private repThresholdLow = 10; // Near 0 degrees (arm down)
+  private repThresholdHigh = 80; // Near 90 degrees (arm bent)
+  private setTimeout = 10000; // 10 seconds without a rep = new set
+  private fatigue: number = 0; // Track fatigue directly
+  private fatigueDecayRate: number = 0.01; // How quickly fatigue decays over time
+  private fatigueEffortThreshold: number = 70; // Threshold above which fatigue increases significantly
+  private fatigueIncreaseRate: number = 0.05; // Base rate for increasing fatigue
+
   constructor(private serialService: SerialService) {
     this.serial = serialService;
     this.serial.data$.subscribe((data) => {
       const newX = this.count++;
 
-      // Add new points to x and y
       const xData = (this.angleGraph.data[0] as PlotlyJS.ScatterData)
         .x as number[];
       const yData = (this.angleGraph.data[0] as PlotlyJS.ScatterData)
@@ -37,8 +49,25 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
       xData.push(newX);
       yData.push(data[0]);
 
+      this.trackRepsAndSets(data[0], Date.now());
+      this.calculateEffort(data[0], Date.now());
+
+      // Check if current value is the new max
       if (this.rangeGraph.data[0].value < data[0]) {
         this.rangeGraph.data[0].value = data[0];
+        this.maxRangeTimer = 0; // Reset the timer when the max is updated
+      } else {
+        // Increment the timer if the max isn't reached
+        this.maxRangeTimer++;
+      }
+
+      // Decrease the range if the max hasn't been reached for a while
+      if (this.maxRangeTimer > 20) {
+        // Arbitrary threshold, adjust as needed
+        this.rangeGraph.data[0].value -= this.rangeDecayRate;
+        if (this.rangeGraph.data[0].value < 0) {
+          this.rangeGraph.data[0].value = 0; // Prevent going below zero
+        }
       }
 
       // Update range to make the graph scroll to the left
@@ -46,23 +75,102 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
         this.angleGraph.layout.xaxis!.range = [newX - this.windowSize, newX];
       }
 
-      const xData2 = (this.effortGraph.data[0] as PlotlyJS.ScatterData)
-        .x as number[];
-      const yData2 = (this.effortGraph.data[0] as PlotlyJS.ScatterData)
-        .y as number[];
-
-      xData2.push(newX);
-      yData2.push(data[1]);
-
-      // Update range to make the graph scroll to the left
-      if (newX > this.windowSize) {
-        this.effortGraph.layout.xaxis!.range = [newX - this.windowSize, newX];
-      }
       if (xData.length >= 2) {
-        this.fatigueGraph.data[0].value =
-          xData[xData.length - 1] - xData[xData.length - 2];
+        const effortChange = Math.abs(
+          yData[yData.length - 1] - yData[yData.length - 2]
+        );
+
+        if (effortChange > 0) {
+          // Increase fatigue based on effort change, faster for larger changes
+          const effortFactor = effortChange / 100; // Normalize effort change
+          this.fatigue += this.fatigueIncreaseRate * effortFactor;
+
+          // If effort is high, increase fatigue more significantly
+          if (yData[yData.length - 1] > this.fatigueEffortThreshold) {
+            this.fatigue += this.fatigueIncreaseRate * 2 * effortFactor; // Increase faster for high effort
+          }
+        } else {
+          // Decay fatigue slowly if no significant effort is being exerted
+          this.fatigue -= this.fatigueDecayRate;
+          if (this.fatigue < 0) {
+            this.fatigue = 0; // Ensure fatigue doesn't go below zero
+          }
+        }
+
+        // Update the fatigue graph
+        this.fatigueGraph.data[0].value = this.fatigue;
       }
     });
+  }
+
+  trackRepsAndSets(currentAngle: number, currentTime: number) {
+    // Track reps based on angle change
+    if (currentAngle < this.repThresholdLow) {
+      this.lastAngle = currentAngle;
+    }
+    if (this.lastAngle === null) {
+      return;
+    }
+
+    // Flag to indicate if a rep has been counted in the current cycle
+    let repCounted = false;
+
+    if (currentAngle >= this.repThresholdHigh) {
+      // Rep is counted only if it hasn't been counted already in this cycle
+      if (!repCounted) {
+        this.reps++;
+        this.lastRepTime = currentTime;
+        this.lastAngle = null;
+        repCounted = true; // Set the flag to true after counting a rep
+      }
+    } else if (currentAngle < this.repThresholdLow) {
+      // Reset rep counting when angle goes below low threshold
+      repCounted = false;
+    }
+
+    // Check if enough time has passed without a rep to count as a set
+    if (
+      this.lastRepTime !== null &&
+      currentTime - this.lastRepTime > this.setTimeout &&
+      this.reps > 0
+    ) {
+      this.sets++;
+      this.reps = 0; // Reset reps for the next set
+    }
+  }
+
+  private lastEffortTime: number | null = null;
+  private effortScale: number = 0.1; // Scale factor for effort calculation
+
+  calculateEffort(currentAngle: number, currentTime: number) {
+    // Ensure we have a previous angle and time to compare against
+    if (this.lastAngle !== null && this.lastEffortTime !== null) {
+      const angleDiff = Math.abs(currentAngle - this.lastAngle);
+      const timeDiff = (currentTime - this.lastEffortTime) / 1000; // Convert to seconds
+      const effort = (angleDiff / timeDiff) * this.effortScale;
+
+      // Add effort to the graph
+      const xDataEffort = (this.effortGraph.data[0] as PlotlyJS.ScatterData)
+        .x as number[];
+      const yDataEffort = (this.effortGraph.data[0] as PlotlyJS.ScatterData)
+        .y as number[];
+
+      const newEffortX = this.count++;
+      xDataEffort.push(newEffortX);
+      yDataEffort.push(effort);
+
+      // Update graph range to scroll left if needed
+      if (newEffortX > this.windowSize) {
+        this.effortGraph.layout.xaxis!.range = [
+          newEffortX - this.windowSize,
+          newEffortX,
+        ];
+      }
+    }
+
+    // Update last known angle and time for the next calculation
+    this.lastAngle = currentAngle;
+    this.lastEffortTime = currentTime;
   }
 
   ngAfterViewInit() {
@@ -153,7 +261,7 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
     data: [
       {
         domain: { x: [0, 1], y: [0, 1] },
-        value: 270,
+        value: 0,
         type: 'indicator',
         mode: 'gauge+number',
         gauge: { axis: { visible: true, range: [0, 100] } },
@@ -181,7 +289,7 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
     ],
     layout: {
       xaxis: {
-        range: [0, 5], // Initial range
+        range: [0, 5 * 25], // Initial range
       },
       yaxis: {
         range: [0, 180],
@@ -191,7 +299,7 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   private intervalId: any;
-  private windowSize = 5; // The x-axis window size to display
+  private windowSize = 20; // The x-axis window size to display
   private count = 4; // Start from 4 since we already have x: [1, 2, 3]
 
   ngOnInit() {
@@ -216,8 +324,8 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
       yData3.push(newY * 10);
 
       // Update range to make the graph scroll to the left
-      if (newX > this.windowSize) {
-        this.bpmGraph.layout.xaxis!.range = [newX - this.windowSize, newX];
+      if (newX > this.windowSize * 25) {
+        this.bpmGraph.layout.xaxis!.range = [newX - this.windowSize * 25, newX];
       }
 
       // Re-plot the graphs
@@ -258,6 +366,6 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
           this.config
         );
       }
-    }, 1000); // Update every second
+    }, 500); // Update every second
   }
 }
