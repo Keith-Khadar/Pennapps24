@@ -208,36 +208,43 @@ export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
       this.fatigueGraph.data[0].value = newY * 1.7;
 
       // Re-plot the graphs
-      PlotlyJS.newPlot(
-        'angle',
-        this.angleGraph.data,
-        this.angleGraph.layout,
-        this.config
-      );
-      PlotlyJS.newPlot(
-        'range',
-        this.rangeGraph.data,
-        this.rangeGraph.layout,
-        this.config
-      );
-      PlotlyJS.newPlot(
-        'effort',
-        this.effortGraph.data,
-        this.effortGraph.layout,
-        this.config
-      );
-      PlotlyJS.newPlot(
-        'fatigue',
-        this.fatigueGraph.data,
-        this.fatigueGraph.layout,
-        this.config
-      );
-      PlotlyJS.newPlot(
-        'bpm',
-        this.bpmGraph.data,
-        this.bpmGraph.layout,
-        this.config
-      );
+      const angleElement = document.getElementById('angle');
+      const rangeElement = document.getElementById('range');
+      const effortElement = document.getElementById('effort');
+      const fatigueElement = document.getElementById('fatigue');
+
+      if (angleElement && rangeElement && effortElement && fatigueElement) {
+        PlotlyJS.newPlot(
+          'angle',
+          this.angleGraph.data,
+          this.angleGraph.layout,
+          this.config
+        );
+        PlotlyJS.newPlot(
+          'range',
+          this.rangeGraph.data,
+          this.rangeGraph.layout,
+          this.config
+        );
+        PlotlyJS.newPlot(
+          'effort',
+          this.effortGraph.data,
+          this.effortGraph.layout,
+          this.config
+        );
+        PlotlyJS.newPlot(
+          'fatigue',
+          this.fatigueGraph.data,
+          this.fatigueGraph.layout,
+          this.config
+        );
+        PlotlyJS.newPlot(
+          'bpm',
+          this.bpmGraph.data,
+          this.bpmGraph.layout,
+          this.config
+        );
+      }
     }, 1000); // Update every second
   }
 }
