@@ -1,20 +1,40 @@
-
-.connect-button {
-    background-color: #4f46e5;
-    color: #ffffff;
-    font-weight: 600;
-    padding: 12px 24px;
+.header {
+    display: flex;
+    flex-grow: 1;
+    justify-content: space-between; /* Spread status and button */
+    align-items: center;
+    width: 100%; /* Ensures it fills the container width */
+    padding: 10px;
+    box-sizing: border-box;
+    border-bottom: 2px solid #004080; /* Dark Blue for border */
+  }
+  
+  .status {
+    font-size: 1.5rem;
+  }
+  
+  .connected {
+    background-color: #e0f7fa; /* Light Blue */
+    color: #006699; /* Text Darker Blue */
+  }
+  
+  .disconnected {
+    background-color: lightgrey; /* Light Red */
+    color: grey; /* Text Dark Red */
+  }
+  
+  .toggle-button {
+    background-color: #004080; /* Button Blue */
+    color: white;
     border: none;
-    border-radius: 6px;
-    font-size: 1rem;
+    padding: 8px 16px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.connect-button:hover {
-    background-color: #4338ca;
-    box-shadow: 0 4px 6px rgba(79, 70, 229, 0.1);
-    transform: translateY(-2px);
-}
+    font-size: 1rem;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .toggle-button:hover {
+    background-color: #006699; /* Lighter Blue */
+  }
+  

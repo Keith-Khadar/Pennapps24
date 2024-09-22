@@ -1,24 +1,11 @@
-/* You can add global styles to this file, and also import other style files */
+/* In your global styles or component-specific styles */
 body {
-    font-family: 'Roboto', sans-serif;
-    background: linear-gradient(135deg, #1a1c20 0%, #2b3038 100%);
-    color: #ffffff;
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    text-align: center;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  background: rgba(173, 216, 230, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-
-
-h1 {
-    font-size: 1.5rem;
-    font-family: Helvetica Neue;
-    font-weight: 600;
-    color: #99b1db;
-    margin-bottom: 1rem;
-    letter-spacing: -0.5px;
-  }
