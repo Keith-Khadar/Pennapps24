@@ -1,2 +1,6 @@
-<h1>Welcome to Freddy's Pizzeria</h1>
-<button class="connect-button" (click)="Connect()">Connect to FREDDY</button>
+<div class="header" [ngClass]="{'connected': isConnected, 'disconnected': !isConnected}">
+    <span class="status">{{ isConnected ? 'Connected' : 'Disconnected' }}</span>
+    <button (click)="toggleConnection()" class="toggle-button">
+      {{ isConnected ? 'Disconnect' : 'Connect' }}
+    </button>
+  </div>

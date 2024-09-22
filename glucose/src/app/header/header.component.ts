@@ -1,24 +1,29 @@
 import { Component, Output, EventEmitter } from '@angular/core';
 import { SerialService } from '../serial.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss'
+  styleUrl: './header.component.scss',
 })
 export class HeaderComponent {
   private serialService: SerialService;
-  @Output() dataProcessed = new EventEmitter<number>();
+  isConnected: boolean = false;
+
   constructor(serialService: SerialService) {
     this.serialService = serialService;
     this.serialService.data$.subscribe((data: number) => {
       this.ProcessData(data);
     });
+    this.serialService.isConnected$.subscribe((isConnected: boolean) => {
+      this.isConnected = isConnected;
+    });
   }
 
-  Connect() {
+  toggleConnection() {
     const serialOptions = {
       baudRate: 9600,
       dataBits: 8,
@@ -26,7 +31,11 @@ export class HeaderComponent {
       stopBits: 1,
     };
 
-    this.serialService.open(serialOptions);
+    if (!this.isConnected) {
+      this.serialService.open(serialOptions);
+    } else {
+      this.serialService.close();
+    }
   }
 
   ProcessData(data: number) {

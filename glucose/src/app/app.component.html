@@ -1,29 +1,20 @@
-<div class="content-wrapper">
-    <app-header (dataProcessed)="onDataProcessed($event)"></app-header>
-    @if (isConnected) {
-      <div class="connected-content">
-        <h2 class="connection-status">Hi We are connected</h2>
-        <div class="data-box">
-          <h3>AngleData</h3>
-          @if (currentAngle !== null) {
-            <div class="current-angle">
-              <h4>Current Angle:</h4>
-              <p>{{ currentAngle }} degrees</p>
-            </div>
-          }
-          <div class="angle-history">
-            <h4>Angle History (last {{ angleData.length }} readings)</h4>
-            <ul>
-              @for (angle of angleData; track angle) {
-                <li>{{ angle }} degrees</li>
-              }
-            </ul>
-          </div>
-        </div>
-      </div>
-    } @else {
-      <div class="product-info">
-        <p class="typewriter"><br />Freddy's Pizzeria: Where every slice tells a story. Our artisanal pizzas are crafted with love, using only the freshest ingredients sourced from local farms. Experience the perfect blend of traditional techniques and innovative flavors that will transport your taste buds to pizza paradise.</p>
-      </div>
-    }
+<mat-toolbar class="toolbar">
+  <app-header></app-header>
+</mat-toolbar>
+@if (this.isConnected){
+  <mat-tab-group>
+    <mat-tab label="Now"><app-now></app-now></mat-tab>
+    <mat-tab label="History">  </mat-tab>
+  </mat-tab-group>
+}
+@else{
+  <div class="container">
+    <div class="content">
+        <h1 class="title">Glucose</h1>
+        <h2 class="subtitle">Recover from injuries faster</h2>
+        <p class="description">Our device tracks an injured athlete's movement and gives them the advice they would get from a world-class physical therapist. Put on your smart Glucose sleeve now to start gaining insights into your recovery!</p>
+        <a href="#" class="cta-button">Learn More</a>
+    </div>
+    <img class="image" src="/api/placeholder/400/320" alt="Glucose device">
   </div>
+}
