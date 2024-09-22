@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatTabsModule } from '@angular/material/tabs';
 import { NowComponent } from './now/now.component';
+import { HistoryComponent } from './history/history.component';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +18,7 @@ import { NowComponent } from './now/now.component';
     MatToolbar,
     MatTabsModule,
     NowComponent,
+    HistoryComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
