@@ -15,9 +15,6 @@ export class HeaderComponent {
 
   constructor(serialService: SerialService) {
     this.serialService = serialService;
-    this.serialService.data$.subscribe((data: number) => {
-      this.ProcessData(data);
-    });
     this.serialService.isConnected$.subscribe((isConnected: boolean) => {
       this.isConnected = isConnected;
     });
@@ -36,9 +33,5 @@ export class HeaderComponent {
     } else {
       this.serialService.close();
     }
-  }
-
-  ProcessData(data: number) {
-    console.log(data);
   }
 }

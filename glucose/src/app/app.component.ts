@@ -31,7 +31,7 @@ export class AppComponent {
     this.serialService = serialService;
 
     this.serialService.isConnected$.subscribe((isConnected: boolean) => {
-      this.isConnected = true;
+      this.isConnected = isConnected;
     });
   }
 }

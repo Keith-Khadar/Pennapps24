@@ -74,7 +74,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
       yaxis: {
         range: [0, 180],
       },
-      title: 'Live Angle Reading',
+      title: 'Range of Motion History',
     },
   };
 
@@ -95,7 +95,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
       yaxis: {
         range: [0, 180],
       },
-      title: 'Effort Reading',
+      title: 'Effort History',
     },
   };
 

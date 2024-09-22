@@ -8,8 +8,8 @@ import { buffer, debounceTime } from 'rxjs/operators';
 export class SerialService {
   private port: any;
   private reader: any;
-  private dataSubject = new Subject<number>();
-  public data$: Observable<number>;
+  private dataSubject = new Subject<number[]>();
+  public data$: Observable<number[]>;
 
   private isConnectedSubject = new BehaviorSubject<boolean>(false);
   public isConnected$: Observable<boolean> =
@@ -60,6 +60,8 @@ export class SerialService {
 
       // Try to read from the reader
       try {
+        let buffer: number[] = [];
+
         // Constantly get data from the reader
         while (true) {
           const { value, done } = await this.reader.read();
@@ -72,10 +74,11 @@ export class SerialService {
           let utf8decoder = new TextDecoder();
           let in_char = utf8decoder.decode(value);
           if (!isNaN(parseFloat(in_char))) {
-            this.dataSubject.next(parseFloat(in_char));
+            buffer.push(parseFloat(in_char));
           }
           if (in_char == '-') {
-            this.dataSubject.next(-1);
+            this.dataSubject.next(buffer);
+            buffer.length = 0;
           }
         }
       } catch (error) {
