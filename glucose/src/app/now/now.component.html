@@ -1,44 +1,52 @@
 <div class="page">
     <div class="row">
-        <mat-icon fontIcon="architecture" class="icon"></mat-icon>
-        <plotly-plot [data]="angleGraph.data" [layout]="angleGraph.layout" [divId]="'angle'" class="graph"></plotly-plot>
-        <plotly-plot [data]="rangeGraph.data" [layout]="rangeGraph.layout" [divId]="'range'" class="graph"></plotly-plot>
+      <mat-icon fontIcon="architecture" class="icon"></mat-icon>
+      <div class="plotly-container">
+        <plotly-plot [data]="angleGraph.data" [layout]="angleGraph.layout" [divId]="'angle'"></plotly-plot>
+      </div>
     </div>
-    <br>
-    <div class="row">
-        <mat-icon fontIcon="fitness_center" class="icon"></mat-icon>
-        <plotly-plot [data]="effortGraph.data" [layout]="effortGraph.layout" [divId]="'effort'" class="graph"></plotly-plot>
-        <plotly-plot [data]="fatigueGraph.data" [layout]="fatigueGraph.layout" [divId]="'fatigue'" class="graph"></plotly-plot>
-    </div>
-    <!-- Set and Rep Counter Display -->
-    <div class="row set-rep-counter">
-        <div class="set-counter">
-            <mat-card class="counter-card">
-                <mat-card-title>Sets</mat-card-title>
-                <mat-card-content>
-                    <p>{{ sets }}</p>
-                </mat-card-content>
-            </mat-card>
+    
+    <div class="row combined-graphs">
+      <div class="plotly-container">
+        <plotly-plot [data]="rangeGraph.data" [layout]="rangeGraph.layout" [divId]="'range'"></plotly-plot>
+      </div>
+      <div class="plotly-container">
+        <plotly-plot [data]="fatigueGraph.data" [layout]="fatigueGraph.layout" [divId]="'fatigue'"></plotly-plot>
+      </div>
+      <div class="counter-container">
+        <div class="counter-card">
+          <mat-card-title>Sets</mat-card-title>
+          <mat-card-content>
+            <p>{{ sets }}</p>
+          </mat-card-content>
         </div>
-        <div class="rep-counter">
-            <mat-card class="counter-card">
-                <mat-card-title>Reps</mat-card-title>
-                <mat-card-content>
-                    <p>{{ reps }}</p>
-                </mat-card-content>
-            </mat-card>
+        <div class="counter-card">
+          <mat-card-title>Reps</mat-card-title>
+          <mat-card-content>
+            <p>{{ reps }}</p>
+          </mat-card-content>
         </div>
+      </div>
     </div>
+  
     <div class="row">
+      <mat-icon fontIcon="fitness_center" class="icon"></mat-icon>
+      <div class="plotly-container">
+        <plotly-plot [data]="effortGraph.data" [layout]="effortGraph.layout" [divId]="'effort'"></plotly-plot>
+      </div>
+    </div>
+    
+    <div class="row heart-rate-plot">
         <mat-icon fontIcon="favorite" class="icon"></mat-icon>
-        <plotly-plot [data]="bpmGraph.data" [layout]="bpmGraph.layout" [divId]="'bpm'" class="graph"></plotly-plot>
-        <div class="set-counter">
-            <mat-card class="counter-card">
-                <mat-card-title>BPM</mat-card-title>
-                <mat-card-content>
-                    <p>{{ sets }}</p>
-                </mat-card-content>
-            </mat-card>
+        <div class="heartbeat-container">
+          <div class="plotly-container">
+            <plotly-plot [data]="bpmGraph.data" [layout]="bpmGraph.layout" [divId]="'bpm'"></plotly-plot>
+          </div>
+          <div class="heart-rate-container">
+            <mat-icon fontIcon="favorite" style="color: red;"></mat-icon>
+            <div class="bpm-display">{{ bpm }} BPM</div>
+          </div>
         </div>
-    </div>
-</div>
+      </div>      
+  </div>
+  

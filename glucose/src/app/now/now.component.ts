@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,10 +14,28 @@ PlotlyModule.plotlyjs = PlotlyJS;
   templateUrl: './now.component.html',
   styleUrls: ['./now.component.scss'],
 })
-export class NowComponent implements OnInit, OnDestroy {
+export class NowComponent implements OnInit, OnDestroy, AfterViewInit {
   sets: number = 0;
   reps: number = 0;
   bpm: number = 0;
+
+  config = { responsive: true, displayModeBar: false };
+
+  ngAfterViewInit() {
+    this.resizePlots();
+    window.addEventListener('resize', this.resizePlots.bind(this));
+  }
+
+  resizePlots() {
+    const update = {
+      'xaxis.autorange': true,
+      'yaxis.autorange': true,
+    };
+    PlotlyJS.relayout('angle', update);
+    PlotlyJS.relayout('range', update);
+    PlotlyJS.relayout('effort', update);
+    PlotlyJS.relayout('fatigue', update);
+  }
 
   public angleGraph: {
     data: Partial<PlotlyJS.ScatterData>[];
@@ -40,6 +58,8 @@ export class NowComponent implements OnInit, OnDestroy {
         range: [0, 180],
       },
       title: 'Live Angle Reading',
+      autosize: true,
+      margin: { l: 40, r: 20, t: 40, b: 30 },
     },
   };
 
@@ -53,7 +73,11 @@ export class NowComponent implements OnInit, OnDestroy {
         gauge: { axis: { visible: true, range: [0, 100] } },
       },
     ],
-    layout: { title: 'Range of Motion' },
+    layout: {
+      title: 'Range of Motion',
+      margin: { l: 40, r: 20, t: 40, b: 30 },
+      height: 200,
+    },
   };
 
   public effortGraph: {
@@ -77,6 +101,7 @@ export class NowComponent implements OnInit, OnDestroy {
         range: [0, 180],
       },
       title: 'Effort Reading',
+      margin: { l: 40, r: 20, t: 40, b: 30 },
     },
   };
 
@@ -90,7 +115,11 @@ export class NowComponent implements OnInit, OnDestroy {
         gauge: { axis: { visible: true, range: [0, 100] } },
       },
     ],
-    layout: { title: 'Fatigue Graph' },
+    layout: {
+      title: 'Fatigue Graph',
+      margin: { l: 40, r: 20, t: 40, b: 30 },
+      height: 200,
+    },
   };
 
   public bpmGraph: {
@@ -179,19 +208,36 @@ export class NowComponent implements OnInit, OnDestroy {
       this.fatigueGraph.data[0].value = newY * 1.7;
 
       // Re-plot the graphs
-      PlotlyJS.newPlot('angle', this.angleGraph.data, this.angleGraph.layout);
-      PlotlyJS.newPlot('range', this.rangeGraph.data, this.rangeGraph.layout);
+      PlotlyJS.newPlot(
+        'angle',
+        this.angleGraph.data,
+        this.angleGraph.layout,
+        this.config
+      );
+      PlotlyJS.newPlot(
+        'range',
+        this.rangeGraph.data,
+        this.rangeGraph.layout,
+        this.config
+      );
       PlotlyJS.newPlot(
         'effort',
         this.effortGraph.data,
-        this.effortGraph.layout
+        this.effortGraph.layout,
+        this.config
       );
       PlotlyJS.newPlot(
         'fatigue',
         this.fatigueGraph.data,
-        this.fatigueGraph.layout
+        this.fatigueGraph.layout,
+        this.config
       );
-      PlotlyJS.newPlot('bpm', this.bpmGraph.data, this.bpmGraph.layout);
+      PlotlyJS.newPlot(
+        'bpm',
+        this.bpmGraph.data,
+        this.bpmGraph.layout,
+        this.config
+      );
     }, 1000); // Update every second
   }
 }
